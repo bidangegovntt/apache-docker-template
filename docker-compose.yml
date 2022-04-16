@@ -1,0 +1,40 @@
+version: '3'
+
+volumes:
+  data:
+  mysql:
+
+services:
+  php-apache-environment:
+     build:
+       context: .
+       dockerfile: Dockerfile
+     restart: unless-stopped
+     depends_on:
+       - db
+    #  volumes:
+    #   - ./sik:/var/www/html/
+    #   - ./apache:/etc/apache2/sites-available
+     ports:
+       - 8001:80
+
+  db:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: webdb
+      MYSQL_USER: webuser
+      MYSQL_PASSWORD: webpass
+      MYSQL_ROOT_PASSWORD: webpass
+    volumes:
+      - mysql:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+        - '8082:80'
+    restart: unless-stopped
+    environment:
+        PMA_HOST: db
+    depends_on:
+        - db
